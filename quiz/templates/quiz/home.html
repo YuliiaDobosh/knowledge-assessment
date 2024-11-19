@@ -1,12 +1,4 @@
-<!DOCTYPE html>
-<html lang="uk">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Головна сторінка</title>
-</head>
-<body>
-    <h1>Ласкаво просимо на головну сторінку!</h1>
-    <p>Це тестова сторінка для вашого Django вебсайту.</p>
-</body>
-</html>
+<!-- quiz/templates/quiz/home.html -->
+<h1>Welcome to the Quiz App!</h1>
+<a href="{% url 'create_test' %}">Create a Test</a><br>
+<a href="{% url 'take_test' 1 %}">Take Test</a>

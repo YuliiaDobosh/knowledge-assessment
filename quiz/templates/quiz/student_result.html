@@ -1,8 +1,8 @@
-<h2>Ваші результати</h2>
+<!-- quiz/templates/quiz/student_result.html -->
+<h1>Your Test Results</h1>
+<p>Total Score: {{ total_score }}</p>
 <ul>
     {% for result in results %}
-    <li>{{ result.test.question }}: {{ result.score }}</li>
+        <li>{{ result.test.question }}: {{ result.score }}</li>
     {% endfor %}
 </ul>
-<p>Загальний бал: {{ total_score }}</p>
-
