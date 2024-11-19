@@ -1,22 +1,9 @@
-"""
-URL configuration for assessment project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/5.1/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
-from django.contrib import admin
-from django.urls import path
+from django.urls import path, include  # Додано include для імпорту 
+from django.contrib import admin  # Імпортуємо адмін панель
+from quiz import views  # Імпортуємо views з додатку quiz
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('admin/', admin.site.urls),  # Реєстрація адмін панелі
+    path('quiz/', include('quiz.urls')),  # Підключення URL-ів для додатку quiz
+    path('', views.home, name='home'),  # Головна сторінка
 ]

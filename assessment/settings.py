@@ -1,3 +1,7 @@
+import os
+DEFAULT_CHARSET = 'utf-8'
+
+
 """
 Django settings for assessment project.
 
@@ -37,10 +41,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
-    # Додайте тут ваш додаток (назва вашого додатку, наприклад, 'assessment')
-    'assessment',
+    'quiz',  
 ]
+
 
 
 MIDDLEWARE = [
@@ -58,18 +61,21 @@ ROOT_URLCONF = 'assessment.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'quiz/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.request',  # Додано
+                'django.contrib.auth.context_processors.auth',  # Додано
+                'django.contrib.messages.context_processors.messages',  # Додано
             ],
         },
     },
 ]
+
+
+
 
 WSGI_APPLICATION = 'assessment.wsgi.application'
 
