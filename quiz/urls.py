@@ -1,10 +1,9 @@
-# quiz/urls.py
 from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('', views.home, name='home'),  # Головна сторінка
-    path('create_test/', views.create_test, name='create_test'),  # Створення тесту
-    path('take_test/<int:test_id>/', views.take_test, name='take_test'),  # Проходження тесту
-    path('student_result/', views.student_result, name='student_result'),  # Перегляд результатів
+    path('', views.index, name='index'),  # головна сторінка
+    path('test/', views.test_view, name='test'),  # сторінка тесту
+    path('submit_test/', views.submit_test, name='submit_test'),  # обробка відправки тесту
+    path('results/', views.test_results, name='test_results'),  # сторінка результатів
 ]

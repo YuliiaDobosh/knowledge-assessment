@@ -61,7 +61,10 @@ ROOT_URLCONF = 'assessment.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'quiz/templates'],
+        'DIRS': [
+            BASE_DIR / 'templates',  # Це для глобальної папки шаблонів
+            BASE_DIR / 'quiz' / 'templates',  # Це для шаблонів у вашій аплікації
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

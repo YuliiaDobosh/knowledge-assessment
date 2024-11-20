@@ -1,33 +1,39 @@
-# quiz/models.py
 from django.db import models
 
-# Модель для зберігання інформації про студентів
+class Test(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.TextField()
+
+class Result(models.Model):
+    test = models.ForeignKey(Test, on_delete=models.CASCADE)
+    user_name = models.CharField(max_length=100)
+    score = models.IntegerField()
+
 class Student(models.Model):
     name = models.CharField(max_length=100)
-    email = models.EmailField(unique=True)
+    # додайте інші поля за потреби
 
     def __str__(self):
         return self.name
-
-# Модель для зберігання інформації про тест
-class Test(models.Model):
-    question = models.CharField(max_length=500)  # Запитання тесту
-    correct_answer = models.CharField(max_length=100)  # Правильна відповідь
+    
+class Question(models.Model):
+    text = models.CharField(max_length=255)
 
     def __str__(self):
-        return self.question
+        return self.text
 
-# Модель для зберігання результатів тесту
-class Result(models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)  # Зв'язок з студентом
-    test = models.ForeignKey(Test, on_delete=models.CASCADE)  # Зв'язок з тестом
-    score = models.IntegerField()  # Бали за тест
-
-    @staticmethod
-    def calculate_total_score(student_name):
-        # Обчислюємо загальний бал для студента
-        total_score = Result.objects.filter(student__name=student_name).aggregate(models.Sum('score'))['score__sum']
-        return total_score or 0
+class Answer(models.Model):
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="answer_set")
+    text = models.CharField(max_length=255)
+    is_correct = models.BooleanField(default=False)
 
     def __str__(self):
-        return f'{self.student.name} - {self.test.question} - {self.score}'
+        return self.text
+
+
+class UserAnswer(models.Model):
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    user_answer = models.CharField(max_length=255)
+
+    def is_correct(self):
+        return self.user_answer == self.question.correct_answer

@@ -1,58 +1,66 @@
-# quiz/views.py
+import os
+import django
+from multiprocessing import Pool
 from django.shortcuts import render, redirect
-from .forms import TestForm, TestAnswerForm
-from .models import Test, Result, Student
+from .models import Question, Answer
+django.setup()
 
-# Головна сторінка
-def home(request):
-    return render(request, 'quiz/home.html')
+# Функція ініціалізації Django
+def initialize_django():
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'knowledge_assessment.settings')
+    django.setup()
 
-# Створення нового тесту
-def create_test(request):
-    if request.method == 'POST':
-        form = TestForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('home')  # Перехід до головної сторінки
+# Основні представлення
+def index(request):
+    return render(request, 'quiz/index.html')
+
+def test_view(request):
+    questions = Question.objects.prefetch_related("answer_set").all()
+    return render(request, "quiz/test.html", {"questions": questions})
+
+def submit_test(request):
+    if request.method == "POST":
+        questions = Question.objects.all()
+        answers_to_check = []
+
+        for question in questions:
+            selected_answer_id = request.POST.get(f"question_{question.id}")
+            if selected_answer_id:
+                answers_to_check.append(int(selected_answer_id))
+
+        # Ініціалізація Django перед запуском процесів
+        initialize_django()
+
+        # Перевірка відповідей паралельно
+        with Pool() as pool:
+            results = pool.map(check_answer, answers_to_check)
+
+        correct_count = sum(results)
+        total_questions = len(questions)
+
+        # Зберігаємо результати в сесії
+        request.session["correct_count"] = correct_count
+        request.session["total_questions"] = total_questions
+
+        return redirect("test_results")
     else:
-        form = TestForm()
-    return render(request, 'quiz/create_test.html', {'form': form})
+        return redirect("test_view")
 
-# Проходження тесту
-def take_test(request, test_id):
-    test = Test.objects.get(id=test_id)
-    if request.method == 'POST':
-        # Отримуємо введене ім'я користувача
-        user_name = request.POST.get('name')
-        answer = request.POST.get('answer')
-        score = 1 if answer == test.correct_answer else 0
-
-        # Зберігаємо студента, якщо він ще не є в базі
-        student, created = Student.objects.get_or_create(name=user_name, email=request.user.email)
-
-        # Зберігаємо результат
-        Result.objects.create(
-            student=student,
-            test=test,
-            score=score,
-        )
-
-        return redirect('student_result')  # Перехід до результатів студента
-    return render(request, 'quiz/take_test.html', {'test': test})
-
-# Перегляд результатів студента
-def student_result(request):
-    # Отримуємо студента за email
-    student = Student.objects.get(email=request.user.email)
+# Підрахунок правильної відповіді
+def check_answer(selected_answer_id):
+    # Ініціалізація Django в процесі
+    initialize_django()
     
-    # Отримуємо всі результати цього студента
-    results = Result.objects.filter(student=student)
-    
-    # Обчислюємо загальний бал
-    total_score = Result.calculate_total_score(student.name)
-    
-    # Повертаємо шаблон з результатами
-    return render(request, 'quiz/student_result.html', {
-        'results': results,
-        'total_score': total_score,
+    try:
+        selected_answer = Answer.objects.get(id=selected_answer_id)
+        return selected_answer.is_correct
+    except Answer.DoesNotExist:
+        return False
+
+def test_results(request):
+    correct_count = request.session.get("correct_count", 0)
+    total_questions = request.session.get("total_questions", 0)
+    return render(request, "quiz/result.html", {
+        "correct_count": correct_count,
+        "total_questions": total_questions
     })

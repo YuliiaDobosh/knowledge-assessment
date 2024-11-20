@@ -1,0 +1,22 @@
+{% extends 'quiz/base.html' %}
+
+{% block content %}
+    <h2>Система Тестування</h2>
+    <p>Пройдіть тест</p>
+
+    <form method="post" action="{% url 'submit_test' %}">
+        {% csrf_token %}
+        {% for question in questions %}
+            <div>
+                <p><strong>{{ question.text }}</strong></p>
+                {% for answer in question.answer_set.all %}
+                    <label>
+                        <input type="radio" name="question_{{ question.id }}" value="{{ answer.id }}">
+                        {{ answer.text }}
+                    </label><br>
+                {% endfor %}
+            </div>
+        {% endfor %}
+        <button type="submit">Завершити тест</button>
+    </form>
+{% endblock %}
