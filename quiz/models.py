@@ -11,8 +11,7 @@ class Result(models.Model):
 
 class Student(models.Model):
     name = models.CharField(max_length=100)
-    # додайте інші поля за потреби
-
+    
     def __str__(self):
         return self.name
     
